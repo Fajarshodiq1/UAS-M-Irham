@@ -4,34 +4,39 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addTodo } from "../src/features/todosSlice";
 
-const addTodoForm = () => {
+const AddTodoForm = () => {
   const todos = useSelector((state) => state.todos.value);
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
   const save = () => {
     setError("");
     if (!title.length) {
-      setError("title can't Be Empty.");
+      setError("Title can't be empty.");
       return;
     }
     if (!description.length) {
-      setError("Description can't Be Empty.");
+      setError("Description can't be empty.");
       return;
     }
-    if (todos.filter((el) => el.title == title).length) {
+    if (!dueDate) {
+      setError("Due date can't be empty.");
+      return;
+    }
+    if (todos.filter((el) => el.title === title).length) {
       setDescription("");
       setTitle("");
-      setError("duplicated todo.");
+      setError("Duplicated todo.");
       return;
     }
-    const newTodos = { title, description, status: false };
+    const newTodo = { title, description, dueDate, status: false };
     setTitle("");
     setDescription("");
-    return dispatch(addTodo(newTodos));
-    setTodos([...todos, newTodos]);
+    setDueDate("");
+    return dispatch(addTodo(newTodo));
   };
 
   return (
@@ -41,7 +46,6 @@ const addTodoForm = () => {
         onChangeText={setTitle}
         value={title}
         placeholder="Enter the Title"
-        keyboardType="numeric"
       />
 
       <TextInput
@@ -49,13 +53,19 @@ const addTodoForm = () => {
         onChangeText={setDescription}
         value={description}
         placeholder="Enter the Description"
-        keyboardType="numeric"
       />
-      <Text
-        style={{ color: "red", textAlign: "center", marginBottom: 3 }}
-        View={error.length}>
+
+      <TextInput
+        style={styles.input}
+        onChangeText={setDueDate}
+        value={dueDate}
+        placeholder="Enter the Due Date (YYYY-MM-DD)"
+      />
+
+      <Text style={{ color: "red", textAlign: "center", marginBottom: 3 }}>
         {error}
       </Text>
+
       <Button title="Save" onPress={save} />
     </View>
   );
@@ -66,8 +76,8 @@ const styles = StyleSheet.create({
     height: 40,
     margin: 12,
     borderWidth: 1,
-    padding: '10px',
+    padding: 10,
   },
 });
 
-export default addTodoForm;
+export default AddTodoForm;
